@@ -9,7 +9,6 @@ import Foundation
 
 public protocol HTTPClient {
     func getUrl(url: URL)
-    var requestedUrl: URL? { get }
 }
 
 public class RemoteFeedLoader {
