@@ -9,15 +9,15 @@ import XCTest
 import EssentialFeed
 
 final class RemoteFeedLoaderTests: XCTestCase {
-
+    
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
-
+    
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-
+    
     func test_RemoteFeedLoader_init_doesntRequestedDataFromUrl() {
         // Arrange
         let (_, client) = makeSut()
@@ -40,9 +40,10 @@ final class RemoteFeedLoaderTests: XCTestCase {
         // Arrange
         let (sut, client) = makeSut()
         var capturedErrors = [RemoteFeedLoader.Error]()
-        client.error = NSError(domain: "Test", code: 0)
         // Act
         sut.load { capturedErrors.append($0) }
+        let clientError = NSError(domain: "Test", code: 0)
+//        client.completions[0](clientError)
         // Assert
         XCTAssertEqual(capturedErrors, [.connectivityError])
         
@@ -66,16 +67,14 @@ final class RemoteFeedLoaderTests: XCTestCase {
     }
     
     private  class HTTPClientSpy: HTTPClient {
-       var requestedURLs = [URL]()  
-        var error: Error?
+        var requestedURLs = [URL]()
+        var completions = [(Error) -> Void]()
         func getUrl(
             url: URL,
             completion: @escaping (Error) -> Void) {
-                if let error = error {
-                    completion(error)
-                }
-            requestedURLs.append(url)
-        }
+                requestedURLs.append(url)
+                completions.append(completion)
+            }
     }
-
+    
 }
